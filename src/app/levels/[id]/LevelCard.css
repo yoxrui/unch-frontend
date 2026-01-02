@@ -1,9 +1,7 @@
 .level-detail-wrapper {
     padding: 20px;
-    min-height: 100vh;
     position: relative;
     box-sizing: border-box;
-    overflow-x: hidden;
 }
 
 .level-bg-blur {
@@ -854,4 +852,83 @@ body.light-mode .btn-sonolus:hover {
 
 body.light-mode .player-text span {
     color: #0f172a !important;
+}
+
+/* Stats Hover Drawer Styles */
+.stat-with-graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 12px;
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.stat-header:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+body.light-mode .stat-header {
+    color: #475569;
+}
+
+body.light-mode .stat-header:hover {
+    background: rgba(15, 23, 42, 0.05);
+    color: #0f172a;
+}
+
+.stat-graph-drawer {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    margin: 0 12px;
+    border: 1px solid transparent;
+}
+
+.stat-with-graph-container:hover .stat-graph-drawer {
+    max-height: 120px;
+    opacity: 1;
+    margin-bottom: 12px;
+    padding: 12px;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode .stat-graph-drawer {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+body.light-mode .stat-with-graph-container:hover .stat-graph-drawer {
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+.graph-svg {
+    width: 100%;
+    height: 60px;
+    overflow: visible;
+}
+
+.graph-path {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.graph-area {
+    fill-opacity: 0.2;
+    stroke: none;
 }

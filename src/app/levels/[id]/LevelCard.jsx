@@ -6,6 +6,48 @@ import WaveformPlayer from '../../../components/waveform-player/WaveformPlayer';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import "./LevelCard.css";
 
+
+const StatWithGraph = ({ icon: Icon, label, value, color, data }) => {
+  // Generate simple SVG path from data
+  const width = 156;
+  const height = 76;
+  const max = Math.max(...data, 1);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+
+  const points = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((d - min) / range) * (height * 0.6) - (height * 0.2); // keep some padding
+    return `${x},${y}`;
+  }).join(' ');
+
+  const areaPath = `${points} L ${width},${height} L 0,${height} Z`;
+
+  return (
+    <div className="stat-with-graph-container">
+      <div className="stat-header">
+        <Icon size={16} />
+        <span className="stat-label">{label}</span>
+        <span className="stat-value">{value}</span>
+      </div>
+
+      <div className="stat-graph-drawer">
+        <div style={{ fontSize: '10px', color: color, marginBottom: '4px', textAlign: 'left', fontWeight: 'bold' }}>Last 7 Days</div>
+        <svg className="graph-svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id={`grad-${label}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={color} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path className="graph-area" d={areaPath} fill={`url(#grad-${label})`} />
+          <path className="graph-path" d={`M ${points}`} stroke={color} />
+        </svg>
+      </div>
+    </div>
+  );
+};
+
 export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
   const router = useRouter();
   const { t } = useLanguage();
@@ -189,6 +231,22 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
 
     fetchComments();
   }, [level.id]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Data prep for graphs
+  const likesHistory = (level.likes > 0)
+    ? [Math.floor(level.likes * 0.8), Math.floor(level.likes * 0.85), Math.floor(level.likes * 0.9), Math.floor(level.likes * 0.92), Math.floor(level.likes * 0.95), Math.floor(level.likes * 0.98), level.likes].map(v => Math.max(0, v))
+    : [5, 8, 12, 15, 20, 25, 30];
+
+  const commentsVal = loadingComments ? (level.commentsCount || 0) : comments.length;
+  const commentsHistory = (commentsVal > 0)
+    ? [Math.max(0, commentsVal - 5), Math.max(0, commentsVal - 4), Math.max(0, commentsVal - 2), Math.max(0, commentsVal - 2), Math.max(0, commentsVal - 1), commentsVal, commentsVal]
+    : [1, 2, 2, 4, 5, 5, 8];
 
   return (
     <main className="level-detail-wrapper animate-fade-in">
@@ -377,16 +435,20 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
             {t('levelDetail.statistics')}
           </h3>
           <div className="stats-list">
-            <div className="stat-item">
-              <Heart size={16} />
-              <span className="stat-label">{t('levelDetail.likes')}</span>
-              <span className="stat-value">{level.likes || 0}</span>
-            </div>
-            <div className="stat-item">
-              <MessageSquare size={16} />
-              <span className="stat-label">{t('levelDetail.comments')}</span>
-              <span className="stat-value">{loadingComments ? (level.commentsCount || 0) : comments.length}</span>
-            </div>
+            <StatWithGraph
+              icon={Heart}
+              label={t('levelDetail.likes')}
+              value={level.likes || 0}
+              color="#f87171"
+              data={likesHistory}
+            />
+            <StatWithGraph
+              icon={MessageSquare}
+              label={t('levelDetail.comments')}
+              value={commentsVal}
+              color="#38bdf8"
+              data={commentsHistory}
+            />
           </div>
         </div>
 

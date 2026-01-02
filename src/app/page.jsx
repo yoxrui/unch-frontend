@@ -375,10 +375,9 @@ function HomeContent() {
                       >
                         <option value="created_at">{t('search.createdDate')}</option>
                         <option value="likes">{t('search.likes')}</option>
-                        <option value="decaying_likes">{t('search.trending')}</option>
+                        <option value="decaying_likes">Decaying Likes</option>
                         <option value="rating">{t('search.rating')}</option>
                         <option value="abc">{t('search.alphabetical')}</option>
-                        <option value="published_at">{t('search.publishedDate')}</option>
                       </select>
                     </div>
 

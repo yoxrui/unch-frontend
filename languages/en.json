@@ -62,7 +62,8 @@
         "next": "Next",
         "noResults": "No results found",
         "loadingCharts": "Loading Charts...",
-        "descriptionIncludes": "Description Includes"
+        "descriptionIncludes": "Description Includes",
+        "descriptionPlaceholder": "Search in descriptions..."
     },
     "levelDetail": {
         "back": "Back",
@@ -109,6 +110,7 @@
         "goHome": "Go Home"
     },
     "common": {
+        "brandName": "UntitledCharts",
         "loading": "Loading...",
         "error": "An error occurred",
         "noResults": "No results found",

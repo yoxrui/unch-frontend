@@ -6,10 +6,10 @@ import "./layout.css";
 import NavLinks from "./NavLinks";
 import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
-import Head from "next/head";
 import { UserProvider, useUser } from "../contexts/UserContext";
 import { LanguageProvider, useLanguage } from "../contexts/LanguageContext";
 import { ThemeProvider } from "../contexts/ThemeContext";
+import BackgroundDecorations from '../components/background-decorations/BackgroundDecorations';
 
 
 const geistSans = Geist({
@@ -84,8 +84,8 @@ function HeaderContent() {
         <div className="header-container">
           <div className="header-left">
             <Link href="/" className="logo-link">
-              <img src="/636a8f1e76b38cb1b9eb0a3d88d7df6f.png" alt="UntitledCharts Logo" />
-              <h2>UntitledCharts</h2>
+              <img src="/636a8f1e76b38cb1b9eb0a3d88d7df6f.png" alt={`${t('common.brandName')} Logo`} />
+              <h2>{t('common.brandName')}</h2>
             </Link>
           </div>
 
@@ -221,7 +221,7 @@ function FooterContent() {
             alt="Miku"
             className="footer-miku"
           />
-          <h2 className="footer-brand">UntitledCharts</h2>
+          <h2 className="footer-brand">{t('common.brandName')}</h2>
           <div className="footer-sonolus-btn-container" style={{ marginTop: '12px' }}>
             <a
               className="px-4 py-2 button bg-black text-white inline-flex items-center"
@@ -283,31 +283,35 @@ function FooterContent() {
   );
 }
 
-import BackgroundDecorations from '../components/background-decorations/BackgroundDecorations';
+function RootLayoutInner({ children }) {
+  const { t } = useLanguage();
+  const pathname = usePathname();
+  const isLevelPage = pathname && typeof pathname === 'string' ? pathname.startsWith('/levels/') : false;
+
+  return (
+    <body
+      className={`${geistSans.variable} ${geistMono.variable} antialiased ${isLevelPage ? 'is-level-page' : ''}`}
+    >
+      <BackgroundDecorations />
+      <HeaderContent />
+      <main className="main-content">
+        {children}
+      </main>
+      <FooterContent />
+    </body>
+  );
+}
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Head>
-        <title>Untitled Charts</title>
-        <meta name="description" content="UntitledCharts Sonolus Server" />
-      </Head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          <LanguageProvider>
-            <UserProvider>
-              <BackgroundDecorations />
-              <HeaderContent />
-              <main className="main-content">
-                {children}
-              </main>
-              <FooterContent />
-            </UserProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </body>
+      <ThemeProvider>
+        <LanguageProvider>
+          <UserProvider>
+            <RootLayoutInner>{children}</RootLayoutInner>
+          </UserProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </html>
   );
 }

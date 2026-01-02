@@ -1167,3 +1167,25 @@ body:not(.light-mode) .bg-grid-pattern {
         align-items: center;
     }
 }
+
+/* Level Page Styling Overrides */
+.is-level-page .site-header {
+    background: rgba(15, 23, 42, 0.4);
+    /* More transparent header on level pages */
+    backdrop-filter: blur(8px);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.is-level-page .site-footer {
+    background: transparent;
+    /* Seamless footer on level pages */
+    border-top-color: rgba(255, 255, 255, 0.05);
+}
+
+body.light-mode.is-level-page .site-header {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+body.light-mode.is-level-page .site-footer {
+    background: transparent;
+}
