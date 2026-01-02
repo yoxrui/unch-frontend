@@ -109,7 +109,6 @@
     flex-shrink: 0;
 }
 
-/* Base close-btn styles handled below */
 
 .close-btn:hover {
     background: rgba(239, 68, 68, 0.1);

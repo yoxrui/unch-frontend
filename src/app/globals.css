@@ -13,18 +13,18 @@
 }
 
 body.light-mode {
-  --background: #f1f5f9;
-  --foreground: #0f172a;
+  --background: #cbd5e1;
+  --foreground: #1e293b;
   --foreground-muted: #475569;
   --foreground-subtle: #64748b;
-  --background-elevated: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.45);
-  --glass-border: rgba(15, 23, 42, 0.05);
-  --primary-accent: hsl(200, 80%, 45%);
+  --background-elevated: #e2e8f0;
+  --glass-bg: rgba(226, 232, 240, 0.6);
+  --glass-border: rgba(100, 116, 139, 0.2);
+  --primary-accent: hsl(200, 70%, 50%);
 }
 
 body.light-mode {
-  background: linear-gradient(135deg, #b3fffd 0%, #e3e6ff 50%, #fde5f5 100%) fixed;
+  background: linear-gradient(145deg, #cbd5e1 0%, #94a3b8 100%) fixed;
   background-attachment: fixed;
 }
 
@@ -78,4 +78,5 @@ body {
   padding: 0;
   min-height: 100vh;
   width: 100%;
+  overflow-x: hidden;
 }

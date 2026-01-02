@@ -51,15 +51,27 @@ export default function LoginBackground() {
         fetchCharts();
     }, []);
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     if (charts.length === 0) return <div className="login-bg-placeholder" />;
 
     const splitCharts = (arr, parts) => {
+        if (!arr.length) return Array.from({ length: parts }, () => []);
         const result = Array.from({ length: parts }, () => []);
         arr.forEach((item, i) => result[i % parts].push(item));
         return result;
     };
 
-    const columns = splitCharts(charts, 8);
+    const numColumns = isMobile ? 4 : 8;
+    const multipliedCharts = [...charts, ...charts, ...charts, ...charts];
+    const columns = splitCharts(multipliedCharts, numColumns);
 
     return (
         <div className="login-background-container">
@@ -76,10 +88,10 @@ export default function LoginBackground() {
                                 <Image
                                     src={chart.coverUrl}
                                     alt=""
-                                    width={200}
-                                    height={200}
+                                    fill
                                     className="bg-chart-img"
                                     unoptimized
+                                    style={{ objectFit: 'cover' }}
                                 />
                             </div>
                         ))}

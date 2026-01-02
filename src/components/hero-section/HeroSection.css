@@ -10,7 +10,7 @@
     overflow: hidden;
     color: white;
     border-radius: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: none;
 }
 
 .hero-bg-container {
@@ -169,7 +169,6 @@
     width: 250px;
     height: 250px;
     flex-shrink: 0;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     border-radius: 20px;
     overflow: hidden;
 }
@@ -234,7 +233,6 @@
     }
 
     .hero-description-box {
-        background: rgba(0, 0, 0, 0.4);
         padding: 20px;
         text-align: center !important;
         margin: 0 auto !important;
@@ -275,9 +273,8 @@
 
 }
 
-.indicator-dot.active {
-    background: white;
-    width: 60px;
+.hero-indicators {
+    display: none !important;
 }
 
 @media (max-width: 768px) {
@@ -299,16 +296,15 @@
     }
 }
 
-/* Light Mode Overrides */
 body.light-mode .hero-section {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
 }
 
 body.light-mode .hero-overlay {
     background: linear-gradient(to bottom,
-            rgba(241, 245, 249, 0.2),
-            rgba(241, 245, 249, 0.8) 80%,
-            rgba(241, 245, 249, 1));
+            rgba(248, 250, 252, 0.1),
+            rgba(248, 250, 252, 0.6) 70%,
+            rgba(248, 250, 252, 0.95));
 }
 
 body.light-mode .hero-title {
@@ -339,7 +335,7 @@ body.light-mode .hero-badge {
 }
 
 body.light-mode .hero-jacket-container {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: none;
 }
 
 body.light-mode .indicator-dot {

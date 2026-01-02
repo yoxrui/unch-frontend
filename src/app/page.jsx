@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
-import { Loader2, TrendingUp, Sparkles } from "lucide-react";
+import { Loader2, TrendingUp, Sparkles, Zap, Shuffle, PlayCircle, Settings, Clock, Star, Heart, Type, ArrowUp, ArrowDown, User } from "lucide-react";
 import ChartsList from "../components/charts-list/ChartsList";
 import PaginationControls from "../components/pagination-controls/PaginationControls";
 import HeroSection from "../components/hero-section/HeroSection";
@@ -15,6 +15,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ViewAllDrawer from "../components/view-all-drawer/ViewAllDrawer";
 
 const APILink = process.env.NEXT_PUBLIC_API_URL;
+
+import LiquidSelect from "../components/liquid-select/LiquidSelect";
 
 function HomeContent() {
   const { t } = useLanguage();
@@ -35,8 +37,9 @@ function HomeContent() {
 
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState("random");
+  const [searchType, setSearchType] = useState("newest");
   const [metaIncludes, setMetaIncludes] = useState("title");
   const [sortBy, setSortBy] = useState("created_at");
   const [sortOrder, setSortOrder] = useState("desc");
@@ -98,7 +101,7 @@ function HomeContent() {
       backgroundUrl: backgroundUrl,
       backgroundV3Url: backgroundV3Url,
       likeCount: item.likeCount ?? item.likes ?? item.like_count ?? 0,
-      commentsCount: item.commentsCount ?? (Array.isArray(item.comments) ? item.comments.length : item.comments) ?? item.comments_count ?? 0,
+      commentsCount: item.comment_count ?? item.commentsCount ?? (Array.isArray(item.comments) ? item.comments.length : item.comments) ?? item.comments_count ?? 0,
       rating: item.rating ?? 0,
       createdAt: item.createdAt || item.created_at,
     };
@@ -140,15 +143,16 @@ function HomeContent() {
       const apiBase = APILink;
 
       const queryParams = new URLSearchParams();
-      queryParams.append('type', searchType);
+      const actualType = searchType === 'newest' ? 'quick' : searchType;
+      queryParams.append('type', actualType);
       queryParams.append('page', page.toString());
       queryParams.append('limit', '10');
 
-      if (staffPick && searchType !== 'random') queryParams.append('staff_pick', '1');
+      if (staffPick && actualType !== 'random') queryParams.append('staff_pick', '1');
 
-      if (searchType === 'quick') {
+      if (actualType === 'quick') {
         if (searchQuery) queryParams.append('meta_includes', searchQuery);
-        queryParams.append('sort_by', sortBy);
+        queryParams.append('sort_by', searchType === 'newest' ? 'created_at' : sortBy);
         queryParams.append('sort_order', sortOrder);
       } else if (searchType === 'advanced') {
         if (minRating) queryParams.append('min_rating', minRating);
@@ -170,8 +174,14 @@ function HomeContent() {
       const json = await res.json();
       const base = json.asset_base_url || "";
 
-      setPosts((json.data || []).map(item => mapChartData(item, base)));
-      setPageCount(searchType === 'random' ? (page + 2) : (json.pages || json.pageCount || 1));
+      const rawData = (json.data || []).map(item => mapChartData(item, base));
+      // Deduplicate posts by ID
+      const uniquePosts = Array.from(new Map(rawData.map(item => [item.id, item])).values());
+
+      setPosts(uniquePosts);
+      const infiniteScrollTypes = ['random', 'newest'];
+      setPageCount(infiniteScrollTypes.includes(searchType) ? (page + 2) : (json.pages || json.pageCount || 1));
+      setTotalResults(json.total || (json.items?.length || json.data?.length || 0));
       setLoading(false);
     } catch (err) {
       console.error(err);
@@ -342,18 +352,19 @@ function HomeContent() {
               <div className="search-controls-grid">
                 <div className="search-control-group">
                   <label>{t('search.searchType')}</label>
-                  <select
+                  <LiquidSelect
                     value={searchType}
                     onChange={(e) => setSearchType(e.target.value)}
-                    className="liquid-select"
-                  >
-                    <option value="random">{t('search.random')}</option>
-                    <option value="quick">{t('search.quick')}</option>
-                    <option value="advanced">{t('search.advanced')}</option>
-                  </select>
+                    options={[
+                      { value: "newest", label: t('search.newest', 'Newest'), icon: Zap },
+                      { value: "random", label: t('search.random'), icon: Shuffle },
+                      { value: "quick", label: t('search.quick', 'Quick'), icon: PlayCircle },
+                      { value: "advanced", label: t('search.advanced'), icon: Settings }
+                    ]}
+                  />
                 </div>
 
-                {searchType !== "random" && (
+                {searchType !== "random" && searchType !== "newest" && (
                   <>
                     <div className="search-control-group" style={{ flexDirection: 'row', alignItems: 'center', minWidth: 'auto', flex: 'none', paddingBottom: '12px', gap: '8px' }}>
                       <input
@@ -366,31 +377,33 @@ function HomeContent() {
                       <label htmlFor="staffPick" style={{ margin: 0, fontSize: '0.9rem', color: 'rgba(255,255,255,0.9)', cursor: 'pointer' }}>{t('search.staffPickOnly')}</label>
                     </div>
 
+
+
                     <div className="search-control-group">
                       <label>{t('search.sortBy')}</label>
-                      <select
+                      <LiquidSelect
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="liquid-select"
-                      >
-                        <option value="created_at">{t('search.createdDate')}</option>
-                        <option value="likes">{t('search.likes')}</option>
-                        <option value="decaying_likes">Decaying Likes</option>
-                        <option value="rating">{t('search.rating')}</option>
-                        <option value="abc">{t('search.alphabetical')}</option>
-                      </select>
+                        options={[
+                          { value: "created_at", label: t('search.createdDate', 'Created Date'), icon: Clock },
+                          { value: "rating", label: "Rating", icon: Star },
+                          { value: "likes", label: "Likes", icon: Heart },
+                          { value: "abc", label: "Alphabetical", icon: Type },
+                          { value: "decaying_likes", label: "Decaying Likes", icon: User }
+                        ]}
+                      />
                     </div>
 
                     <div className="search-control-group">
                       <label>{t('search.order')}</label>
-                      <select
+                      <LiquidSelect
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value)}
-                        className="liquid-select"
-                      >
-                        <option value="asc">{t('search.ascending')}</option>
-                        <option value="desc">{t('search.descending')}</option>
-                      </select>
+                        options={[
+                          { value: "asc", label: t('search.ascending'), icon: ArrowUp },
+                          { value: "desc", label: t('search.descending'), icon: ArrowDown }
+                        ]}
+                      />
                     </div>
                   </>
                 )}
@@ -497,22 +510,25 @@ function HomeContent() {
             </form>
           </div>
 
-          <ChartsList
-            posts={posts}
-            loading={loading}
-            currentlyPlaying={currentlyPlaying}
-            audioRefs={audioRefs}
-            onPlay={handlePlay}
-            onStop={handleStop}
-            onAudioRef={handleAudioRef}
-            sonolusUser={sonolusUser}
-          />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <ChartsList
+              posts={posts}
+              loading={loading}
+              currentlyPlaying={currentlyPlaying}
+              audioRefs={audioRefs}
+              onPlay={handlePlay}
+              onStop={handleStop}
+              onAudioRef={handleAudioRef}
+              sonolusUser={sonolusUser}
+            />
+          </div>
 
           <PaginationControls
             currentPage={page}
             pageCount={pageCount}
             onPageChange={setPage}
             posts={posts}
+            totalCount={totalResults}
           />
         </div>
       )}

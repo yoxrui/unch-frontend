@@ -24,8 +24,10 @@ const geistMono = Geist_Mono({
 });
 
 
-import { Menu, X, Sun, Moon, Globe } from "lucide-react";
+import { Menu, X, Sun, Moon, Globe, User, LogOut } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
+
+import LiquidSelect from "../components/liquid-select/LiquidSelect";
 
 function HeaderContent() {
   const { isLoggedIn, sonolusUser, handleLogout } = useUser();
@@ -55,22 +57,23 @@ function HeaderContent() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const LangPicker = () => (
-    <div className="header-control-item">
-      <Globe size={20} />
-      <select
-        value={language}
-        onChange={(e) => changeLanguage(e.target.value)}
-        className="header-lang-select"
-      >
-        {Object.entries(supportedLangs).map(([code, lang]) => (
-          <option key={code} value={code}>
-            {lang.name}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  const LangPicker = () => {
+    const options = Object.entries(supportedLangs).map(([code, lang]) => ({
+      value: code,
+      label: `${lang.flag} ${lang.name} (${lang.english_name || lang.name})`
+    }));
+
+    return (
+      <div className="header-control-item">
+        <LiquidSelect
+          value={language}
+          onChange={(e) => changeLanguage(e.target.value)}
+          options={options}
+          icon={Globe}
+        />
+      </div>
+    );
+  };
 
   const ThemeToggler = () => (
     <button onClick={toggleTheme} className="header-control-btn" title="Toggle Theme">
@@ -125,15 +128,23 @@ function HeaderContent() {
                       className="dropdown-item logout-btn"
                       onClick={handleLogout}
                     >
+                      <LogOut size={16} />
                       {t('nav.logout')}
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <Link href="/login" className="login-link-btn">
-                {t('nav.login')}
-              </Link>
+              <div className="user-profile-container">
+                <Link href="/login" className="user-profile login-nav-link" style={{ padding: '6px 16px' }}>
+                  <div className="user-avatar">
+                    <div className="default-avatar" style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+                      <User size={14} />
+                    </div>
+                  </div>
+                  <span className="user-name">{t('nav.login')}</span>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -190,7 +201,8 @@ function HeaderContent() {
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="mobile-login-btn">
+              <Link href="/login" className="mobile-login-btn" onClick={() => setMobileMenuOpen(false)}>
+                <User size={20} />
                 {t('nav.login')}
               </Link>
             )}
@@ -248,19 +260,15 @@ function FooterContent() {
         </div>
 
         <div className="footer-center">
-          <div className="lang-picker">
-            <select
+          <div className="lang-picker" style={{ minWidth: '200px' }}>
+            <LiquidSelect
               value={language}
               onChange={(e) => changeLanguage(e.target.value)}
-              className="lang-select"
-              suppressHydrationWarning
-            >
-              {Object.entries(supportedLangs).map(([code, lang]) => (
-                <option key={code} value={code}>
-                  {lang.flag} {lang.name}
-                </option>
-              ))}
-            </select>
+              options={Object.entries(supportedLangs).map(([code, lang]) => ({
+                value: code,
+                label: `${lang.flag} ${lang.name}`
+              }))}
+            />
           </div>
         </div>
 

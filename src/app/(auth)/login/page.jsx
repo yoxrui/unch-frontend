@@ -38,9 +38,9 @@ export default function Login() {
   const getHostFromUrl = (url) => {
     if (!url) return "unch.untitledcharts.com";
     if (url.includes("://")) {
-      return url.split("://")[1];
+      return url.split("://")[1].split('/')[0];
     }
-    return url;
+    return url.split('/')[0];
   };
 
   const onSubmit = async (e) => {
@@ -61,11 +61,13 @@ export default function Login() {
       const host = getHostFromUrl(sonolusServerUrl);
 
       setExternalLoginId(id);
+      const authUrl = `https://open.sonolus.com/external-login/${host}/sonolus/authenticate_external?id=${id}`;
+      console.log("Redirecting to:", authUrl);
 
-      window.open(`https://open.sonolus.com/external-login/${host}/sonolus/authenticate_external?id=${id}`, "_blank", "noopener,noreferrer");
+      window.open(authUrl, '_blank');
     } catch (e) {
       console.error("Login Error:", e);
-      setLoginError("Connection failed. Please check your internet or try again.");
+      setLoginError(t('login.connectionFailed', "Connection failed. Please check your internet or try again."));
       setIsWaiting(false);
     }
   };
@@ -103,17 +105,46 @@ export default function Login() {
   return (
     <main>
       <LoginBackground />
-      <div className="login-container">
-        <div className="login-box">
-          <h1>UntitledCharts</h1>
+      <div className="login-screen" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
+        <div className="login-box glass-card animate-scale-in" style={{
+          width: '100%',
+          maxWidth: '440px',
+          margin: '0 20px',
+        }}>
+          <h1 style={{
+            textAlign: 'center',
+            marginBottom: '32px',
+            background: 'linear-gradient(135deg, #38bdf8 0%, #f472b6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            fontWeight: '800',
+            fontSize: '2.5rem',
+            letterSpacing: '-1px'
+          }}>
+            UntitledCharts
+          </h1>
+
           {loginError && (
-            <div style={{ color: '#ef4444', marginBottom: '15px', fontSize: '14px', textAlign: 'center', padding: '10px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }}>
+            <div style={{
+              color: '#ef4444',
+              marginBottom: '24px',
+              fontSize: '14px',
+              textAlign: 'center',
+              padding: '12px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              borderRadius: '12px',
+              border: '1px solid rgba(239, 68, 68, 0.2)'
+            }}>
               {loginError}
             </div>
           )}
+
           {isWaiting ? (
-            <div>
-              <p>{t('login.waitingForAuth')}</p>
+            <div style={{ textAlign: 'center' }}>
+              <div className="loading-spinner" style={{ marginBottom: '20px' }}>
+                <div style={{ width: '40px', height: '40px', border: '3px solid rgba(56, 189, 248, 0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+              </div>
+              <p style={{ color: '#94a3b8', marginBottom: '24px', fontWeight: '500' }}>{t('login.waitingForAuth')}</p>
               {externalLoginId && (
                 <div className="login-actions">
                   <button
@@ -122,6 +153,7 @@ export default function Login() {
                       window.open(`https://open.sonolus.com/external-login/${host}/sonolus/authenticate_external?id=${externalLoginId}`, "_blank", "noopener,noreferrer");
                     }}
                     className="login-btn"
+                    style={{ width: '100%', padding: '14px', borderRadius: '16px', fontWeight: '600' }}
                   >
                     {t('login.openSonolusApp')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', margin: '0 5px' }} />
                   </button>
@@ -130,8 +162,8 @@ export default function Login() {
             </div>
           ) : (
             <form onSubmit={onSubmit}>
-              <div className="login-actions">
-                <button type="submit" className="login-btn">
+              <div className="login-actions" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <button type="submit" className="login-btn" style={{ width: '100%', padding: '16px', borderRadius: '16px', fontWeight: '700', fontSize: '1rem', transition: 'all 0.3s ease' }}>
                   {t('login.loginVia')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', margin: '0 5px' }} />
                 </button>
               </div>

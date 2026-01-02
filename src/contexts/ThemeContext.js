@@ -11,6 +11,9 @@ export function ThemeProvider({ children }) {
         if (savedTheme) {
             setTheme(savedTheme);
             document.body.classList.toggle("light-mode", savedTheme === "light");
+        } else {
+            // Default to dark and ensure body reflects it
+            document.body.classList.remove("light-mode");
         }
     }, []);
 

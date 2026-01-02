@@ -40,7 +40,6 @@ body:not(.light-mode) .bg-text {
     /* Better blending for that energetic look */
 }
 
-/* Large Hero Shapes (Manual) */
 .bg-large-circle {
     width: 300px;
     height: 300px;
@@ -69,7 +68,6 @@ body:not(.light-mode) .bg-large-triangle {
     border-bottom-color: rgba(99, 102, 241, 0.3);
 }
 
-/* Common Generated Shapes */
 .bg-common-circle {
     border: 2px solid rgba(179, 255, 253, 0.6);
     background: transparent;
@@ -131,7 +129,6 @@ body:not(.light-mode) .bg-common-cross::after {
     left: 0;
     width: 100%;
     height: 100%;
-    /* Polka dot pattern instead of grid for that "pop" feel */
     background-image: radial-gradient(rgba(15, 23, 42, 0.1) 2px, transparent 2px);
     background-size: 40px 40px;
     opacity: 0.6;
@@ -169,7 +166,6 @@ body:not(.light-mode) .bg-grid-pattern {
 @media (max-width: 768px) {
     .bg-text {
         font-size: 80px;
-        /* Force large size on mobile to match PC feel */
         opacity: 0.1;
         /* Reduce opacity slightly to not overwhelm small screen */
     }

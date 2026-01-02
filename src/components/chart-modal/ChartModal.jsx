@@ -63,6 +63,12 @@ export default function ChartModal({
   editData = null
 }) {
   const { t } = useLanguage();
+
+  const visibilityOptions = [
+    { value: "public", label: "Public", icon: Globe },
+    { value: "unlisted", label: "Unlisted", icon: EyeOff },
+    { value: "private", label: "Private", icon: Lock }
+  ];
   const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const audioRefs = useRef({});
 
@@ -126,15 +132,11 @@ export default function ChartModal({
 
               <div className="form-group">
                 <label htmlFor="visibility_edit">Visibility</label>
-                <select
-                  id="visibility_edit"
+                <LiquidSelect
                   value={form.visibility || "public"}
-                  onChange={onUpdate("visibility")}
-                >
-                  <option value="public">Public</option>
-                  <option value="unlisted">Unlisted</option>
-                  <option value="private">Private</option>
-                </select>
+                  onChange={(e) => onUpdate("visibility")(e)}
+                  options={visibilityOptions}
+                />
               </div>
 
               <div className="form-group file-section">

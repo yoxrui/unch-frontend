@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import { Pencil, Trash2, Globe, Lock, Link as LinkIcon, Heart, Calendar, RefreshCw, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Globe, Lock, Link as LinkIcon, Heart, Calendar, RefreshCw, Loader2, MessageSquare } from "lucide-react";
 import AudioControls from "../audio-control/AudioControls";
 import AudioVisualizer from "../audio-visualizer/AudioVisualizer";
 import { useLanguage } from "@/contexts/LanguageContext";
 import "./ChartsList.css";
+import { formatRelativeTime } from "@/utils/dateUtils";
 
 export default function ChartsList({
   posts,
@@ -73,15 +74,16 @@ export default function ChartsList({
                         ? post.title.substring(0, 25) + "..."
                         : post.title}
                     </span>
-                    <span className="song-artist-dashboard">
-                      {t('hero.by')}: {post.artists.length > 30
+                    <span className="author-dashboard" style={{ fontSize: '10px', color: '#94a3b8', marginTop: '4px', display: 'block' }}>
+                      {t('hero.chartedBy')} {post.author}
+                    </span>
+                  </Link>
+                  <div className="meta-stack-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px', minWidth: '120px' }}>
+                    <span className="song-artist-dashboard" style={{ fontSize: '12px', whiteSpace: 'nowrap', fontWeight: '600' }}>
+                      {t('search.songBy', 'Song by')}: {post.artists.length > 30
                         ? post.artists.substring(0, 30) + "..."
                         : post.artists}
                     </span>
-                  </Link>
-                  <div className="rating-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', minWidth: '80px' }}>
-                    <span className="rating-dashboard">Lv.{post.rating}</span>
-                    <span className="author-dashboard">{t('hero.chartedBy')} {post.author}</span>
                   </div>
                 </div>
 
@@ -131,14 +133,24 @@ export default function ChartsList({
                       {post.status}
                     </span>
                   )}
-                  {post.likeCount !== undefined && (
-                    <span className="metadata-item likes">
-                      <Heart size={12} fill="currentColor" /> {post.likeCount}
+                  <div className="metadata-stats-group">
+                    <span className="metadata-item stats-combined">
+                      {post.rating !== undefined && (
+                        <span className="lv-part">Lv.{post.rating}</span>
+                      )}
+                      {post.likeCount !== undefined && (
+                        <span className="likes-part">
+                          <Heart size={12} fill="currentColor" /> {post.likeCount}
+                        </span>
+                      )}
+                      <span className="comments-part">
+                        <MessageSquare size={12} className="text-blue-400" /> {post.commentsCount || 0}
+                      </span>
                     </span>
-                  )}
+                  </div>
                   {post.createdAt && (
                     <span className="metadata-item created">
-                      <Calendar size={12} /> {new Date(post.createdAt).toLocaleDateString()}
+                      <Calendar size={12} /> {formatRelativeTime(post.createdAt)}
                     </span>
                   )}
                   {post.updatedAt && (

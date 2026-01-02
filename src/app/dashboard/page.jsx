@@ -1,7 +1,7 @@
 "use client";
 import "./page.css";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Globe, EyeOff, Lock } from "lucide-react";
 import ChartsList from "../../components/charts-list/ChartsList";
 import PaginationControls from "../../components/pagination-controls/PaginationControls";
 import ChartModal from "../../components/chart-modal/ChartModal";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 const APILink = process.env.NEXT_PUBLIC_API_URL;
 
 import { useLanguage } from "../../contexts/LanguageContext";
+import LiquidSelect from "../../components/liquid-select/LiquidSelect";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -895,19 +896,17 @@ export default function Dashboard() {
                         <span className="card-date">
                           {new Date(post.createdAt).toLocaleDateString()}
                         </span>
-                        <select
-                          className="visibility-select"
+                        <LiquidSelect
                           value={post.status || 'PUBLIC'}
-                          onChange={(e) => {
-                            const next = e.target.value;
-                            handleVisibilityChange(post.id, post.status, next);
+                          onChange={(value) => {
+                            handleVisibilityChange(post.id, post.status, value);
                           }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <option value="PUBLIC">Public</option>
-                          <option value="UNLISTED">Unlisted</option>
-                          <option value="PRIVATE">Private</option>
-                        </select>
+                          options={[
+                            { value: "PUBLIC", label: "Public", icon: Globe },
+                            { value: "UNLISTED", label: "Unlisted", icon: EyeOff },
+                            { value: "PRIVATE", label: "Private", icon: Lock }
+                          ]}
+                        />
                       </div>
                     </div>
                   </div>

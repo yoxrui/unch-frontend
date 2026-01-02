@@ -1,14 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Copy, ExternalLink, ArrowLeft, User, Music, Play, Pause, Volume2, Star, Download, Eye } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Copy, ExternalLink, ArrowLeft, User, Music, Play, Pause, Volume2, Star, Download, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import WaveformPlayer from '../../../components/waveform-player/WaveformPlayer';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import "./LevelCard.css";
 
 
 const StatWithGraph = ({ icon: Icon, label, value, color, data }) => {
-  // Generate simple SVG path from data
+  const { t } = useLanguage();
+
   const width = 156;
   const height = 76;
   const max = Math.max(...data, 1);
@@ -17,14 +18,20 @@ const StatWithGraph = ({ icon: Icon, label, value, color, data }) => {
 
   const points = data.map((d, i) => {
     const x = (i / (data.length - 1)) * width;
-    const y = height - ((d - min) / range) * (height * 0.6) - (height * 0.2); // keep some padding
+    const y = height - ((d - min) / range) * (height * 0.6) - (height * 0.2);
     return `${x},${y}`;
   }).join(' ');
 
   const areaPath = `${points} L ${width},${height} L 0,${height} Z`;
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="stat-with-graph-container">
+    <div
+      className={`stat-with-graph-container ${isOpen ? 'open' : ''}`}
+      onClick={() => setIsOpen(!isOpen)}
+      style={{ cursor: 'pointer' }}
+    >
       <div className="stat-header">
         <Icon size={16} />
         <span className="stat-label">{label}</span>
@@ -32,7 +39,7 @@ const StatWithGraph = ({ icon: Icon, label, value, color, data }) => {
       </div>
 
       <div className="stat-graph-drawer">
-        <div style={{ fontSize: '10px', color: color, marginBottom: '4px', textAlign: 'left', fontWeight: 'bold' }}>Last 7 Days</div>
+        <div style={{ fontSize: '10px', color: color, marginBottom: '4px', textAlign: 'left', fontWeight: 'bold' }}>{t('levelDetail.last7Days', 'Last 7 Days')}</div>
         <svg className="graph-svg" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
           <defs>
             <linearGradient id={`grad-${label}`} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -40,7 +47,7 @@ const StatWithGraph = ({ icon: Icon, label, value, color, data }) => {
               <stop offset="100%" stopColor={color} stopOpacity="0" />
             </linearGradient>
           </defs>
-          <path className="graph-area" d={areaPath} fill={`url(#grad-${label})`} />
+          <path className="graph-area" d={`M ${areaPath}`} fill={`url(#grad-${label})`} />
           <path className="graph-path" d={`M ${points}`} stroke={color} />
         </svg>
       </div>
@@ -53,7 +60,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
   const { t } = useLanguage();
   const sonolusServerUrl = SONOLUS_SERVER_URL;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.7);
+  const [volume, setVolume] = useState(1);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [waveformBars, setWaveformBars] = useState([]);
@@ -62,25 +69,14 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
   const getSonolusLink = () => {
     if (!SONOLUS_SERVER_URL) return '';
     const serverWithoutSchema = SONOLUS_SERVER_URL.replace(/^https?:\/\//, '');
-    return `https://open.sonolus.com/${serverWithoutSchema}/levels/UnCh-${level.id}`;
+    const sonolusId = level.sonolusId || `UnCh-${level.id}`;
+    return `https://open.sonolus.com/${serverWithoutSchema}/levels/${sonolusId}`;
   };
 
   const handleCopyEmbed = async () => {
-    const embedCode = `<!-- UntitledCharts Embed -->
-<div style="position:relative;width:100%;max-width:500px;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:linear-gradient(135deg,#1e293b,#0f172a);">
-  <a href="${typeof window !== 'undefined' ? window.location.href : ''}" target="_blank" style="display:flex;text-decoration:none;color:white;padding:16px;gap:16px;align-items:center;">
-    <img src="${level.thumbnail || ''}" alt="${level.title}" style="width:80px;height:80px;border-radius:12px;object-fit:cover;box-shadow:0 4px 12px rgba(0,0,0,0.4);" />
-    <div style="flex:1;">
-      <div style="font-weight:700;font-size:1.1em;margin-bottom:4px;">${level.title}</div>
-      <div style="color:#94a3b8;font-size:0.9em;margin-bottom:8px;">${t('levelDetail.by')} ${level.artists || t('common.unknownArtist')}</div>
-      <div style="display:flex;gap:8px;">
-        <span style="background:rgba(56,189,248,0.2);color:#38bdf8;padding:4px 10px;border-radius:20px;font-size:0.75em;">${t('levelDetail.level')} ${level.rating}</span>
-        <span style="background:rgba(239,68,68,0.2);color:#f87171;padding:4px 10px;border-radius:20px;font-size:0.75em;">❤ ${level.likes || 0}</span>
-      </div>
-    </div>
-  </a>
-  <div style="text-align:center;padding:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.7em;color:#64748b;">${t('levelDetail.poweredBy')} UntitledCharts</div>
-</div>`;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://unch.untitledcharts.com';
+    const embedUrl = `${origin}/embed/${level.sonolusId || 'UnCh-' + level.id}`;
+    const embedCode = `<iframe src="${embedUrl}" width="450" height="240" style="border:none;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.4);" title="${level.title} - UntitledCharts" loading="lazy"></iframe>`;
     try {
       await navigator.clipboard.writeText(embedCode);
       alert(t('levelDetail.embedCopied'));
@@ -202,25 +198,75 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
     : null;
 
   const [showFullDesc, setShowFullDesc] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(level.commentsCount || 0);
+  const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
+  const [trends, setTrends] = useState({ likes: [], comments: [] });
+  const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(true);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      if (!level.id) return;
+    const fetchSupplementalInfo = async () => {
+      const rawSonolusId = level.sonolusId || '';
+      const cleanChartId = rawSonolusId.replace(/^UnCh-/, '');
+
+      if (!cleanChartId) {
+        console.warn("No valid chartId found for supplemental fetch");
+        return;
+      }
+
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL;
-        const chartId = level.id.toString().replace('UnCh-', '');
-        const res = await fetch(`${apiBase}/api/charts/${chartId}/comment`);
+
+        const infoRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/charts/${cleanChartId}/`);
+        if (infoRes.ok) {
+          const data = await infoRes.json();
+          const count = data.comment_count !== undefined
+            ? data.comment_count
+            : (data.data && data.data.comment_count !== undefined ? data.data.comment_count : undefined);
+
+          if (count !== undefined) {
+            setCommentCount(count);
+          }
+        }
+
+
+        const trendsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/charts/${cleanChartId}/trends/`);
+        if (trendsRes.ok) {
+          const trendsData = await trendsRes.json();
+          setTrends({
+            likes: Array.isArray(trendsData.likes) ? trendsData.likes : [],
+            comments: Array.isArray(trendsData.comments) ? trendsData.comments : []
+          });
+        }
+      } catch (e) {
+        console.error("Failed to fetch supplemental or trends info", e);
+      }
+    };
+    fetchSupplementalInfo();
+  }, [level.sonolusId]);
+
+  const totalComments = (commentCount > 0 ? commentCount : (level.commentsCount || commentCount || 0));
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      const rawSonolusId = level.sonolusId || '';
+      const cleanChartId = rawSonolusId.replace(/^UnCh-/, '');
+
+      if (!cleanChartId) return;
+
+      setLoadingComments(true);
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/charts/${cleanChartId}/comment/?page=${page - 1}`);
 
         if (res.ok) {
           const data = await res.json();
           const commentsList = Array.isArray(data) ? data : (data.data || []);
           setComments(commentsList);
-        } else if (res.status === 404) {
 
+          setTotalPages(Math.ceil(totalComments / 10) || 1);
+        } else if (res.status === 404) {
           setComments([]);
+          setTotalPages(1);
         }
       } catch (e) {
         console.error("Failed to fetch comments", e);
@@ -230,7 +276,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
     };
 
     fetchComments();
-  }, [level.id]);
+  }, [level.id, page, totalComments]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -238,15 +284,16 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
     }
   }, [volume]);
 
-  // Data prep for graphs
-  const likesHistory = (level.likes > 0)
-    ? [Math.floor(level.likes * 0.8), Math.floor(level.likes * 0.85), Math.floor(level.likes * 0.9), Math.floor(level.likes * 0.92), Math.floor(level.likes * 0.95), Math.floor(level.likes * 0.98), level.likes].map(v => Math.max(0, v))
-    : [5, 8, 12, 15, 20, 25, 30];
 
-  const commentsVal = loadingComments ? (level.commentsCount || 0) : comments.length;
-  const commentsHistory = (commentsVal > 0)
-    ? [Math.max(0, commentsVal - 5), Math.max(0, commentsVal - 4), Math.max(0, commentsVal - 2), Math.max(0, commentsVal - 2), Math.max(0, commentsVal - 1), commentsVal, commentsVal]
-    : [1, 2, 2, 4, 5, 5, 8];
+  const likesHistory = (trends.likes && trends.likes.length > 0)
+    ? trends.likes
+    : [0, 0, 0, 0, 0, 0, level.likes || 0];
+
+
+  const commentsVal = loadingComments ? totalComments : (commentCount || 0);
+  const commentsHistory = (trends.comments && trends.comments.length > 0)
+    ? trends.comments
+    : [0, 0, 0, 0, 0, 0, commentsVal];
 
   return (
     <main className="level-detail-wrapper animate-fade-in">
@@ -408,8 +455,14 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
 
             <div className="level-actions">
               <button
-                onClick={() => window.open(getSonolusLink(), '_blank')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  const url = getSonolusLink();
+                  if (url) window.open(url, '_blank', 'noopener,noreferrer');
+                }}
                 className="action-btn btn-sonolus"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
               >
                 {t('levelDetail.openViaSonolus')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', marginLeft: '6px' }} />
               </button>
@@ -452,10 +505,10 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
           </div>
         </div>
 
-        <div className="comments-card" style={{ display: 'block' }}>
+        <div className="comments-card">
           <h3 className="stats-title" style={{ marginBottom: '20px' }}>
             <MessageSquare size={18} />
-            {t('levelDetail.comments')} ({comments.length})
+            {t('levelDetail.comments')} ({totalComments})
           </h3>
 
           {loadingComments ? (
@@ -463,7 +516,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
           ) : comments.length > 0 ? (
             <>
               <div className="comments-list" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                {comments.slice((page - 1) * 5, page * 5).map((comment, i) => (
+                {comments.map((comment, i) => (
                   <div key={i} className="comment-item" style={{
                     background: 'rgba(255,255,255,0.05)',
                     padding: '12px',
@@ -471,7 +524,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
                     border: '1px solid rgba(255,255,255,0.1)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                      <span style={{ fontWeight: '600', color: '#38bdf8' }}>{comment.username || "User"}</span>
+                      <span style={{ fontWeight: '600', color: '#38bdf8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px', display: 'inline-block' }}>{comment.username || "User"}</span>
                       <span style={{ fontSize: '0.8em', color: 'rgba(255,255,255,0.5)' }}>
                         {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ""}
                       </span>
@@ -480,40 +533,72 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
                   </div>
                 ))}
               </div>
-              {comments.length > 5 && (
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              {totalPages > 1 && (
+                <div className="comments-pagination" style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '16px',
+                  marginTop: '24px',
+                  padding: '12px',
+                  background: 'rgba(255,255,255,0.03)',
+                  borderRadius: '12px'
+                }}>
                   <button
                     disabled={page === 1}
                     onClick={() => setPage(p => Math.max(1, p - 1))}
+                    className="pagination-btn"
                     style={{
-                      padding: '8px 16px',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: 'white',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '10px 18px',
+                      background: page === 1 ? 'rgba(255,255,255,0.05)' : 'rgba(56, 189, 248, 0.15)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '10px',
+                      color: page === 1 ? '#64748b' : '#38bdf8',
                       cursor: page === 1 ? 'not-allowed' : 'pointer',
-                      opacity: page === 1 ? 0.5 : 1
+                      fontWeight: '600',
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s'
                     }}
                   >
-                    Previous
+                    <ChevronLeft size={18} />
+                    Prev
                   </button>
-                  <span style={{ display: 'flex', alignItems: 'center', color: '#94a3b8' }}>
-                    {page} / {Math.ceil(comments.length / 5)}
+                  <span style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: '#f8fafc',
+                    fontWeight: '600',
+                    fontSize: '0.95rem',
+                    background: 'rgba(255,255,255,0.08)',
+                    padding: '8px 16px',
+                    borderRadius: '8px'
+                  }}>
+                    {page} / {totalPages}
                   </span>
                   <button
-                    disabled={page >= Math.ceil(comments.length / 5)}
-                    onClick={() => setPage(p => Math.min(Math.ceil(comments.length / 5), p + 1))}
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    className="pagination-btn"
                     style={{
-                      padding: '8px 16px',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: 'white',
-                      cursor: page >= Math.ceil(comments.length / 5) ? 'not-allowed' : 'pointer',
-                      opacity: page >= Math.ceil(comments.length / 5) ? 0.5 : 1
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '10px 18px',
+                      background: page >= totalPages ? 'rgba(255,255,255,0.05)' : 'rgba(56, 189, 248, 0.15)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '10px',
+                      color: page >= totalPages ? '#64748b' : '#38bdf8',
+                      cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+                      fontWeight: '600',
+                      fontSize: '0.9rem',
+                      transition: 'all 0.2s'
                     }}
                   >
                     Next
+                    <ChevronRight size={18} />
                   </button>
                 </div>
               )}

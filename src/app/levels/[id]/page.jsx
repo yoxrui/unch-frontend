@@ -18,21 +18,22 @@ async function fetchLevel(rawId) {
 
   return {
     id: data.id,
+    sonolusId: rawId,
     title: data.title || 'Untitled Level',
     description: data.description || 'No description provided.',
     thumbnail: buildAssetUrl(data.jacket_file_hash),
-    authorId: data.author, 
+    authorId: data.author,
     author: data.author_full || data.author || 'Unknown',
     artists: data.artists || 'Unknown Artist',
     rating: data.rating || 0,
     likes: data.likes || data.like_count || 0,
     comments: data.comments || data.comments_count || 0,
     asset_base_url: base,
-    
+
     music_hash: data.music_file_hash || (data.music && data.music.hash),
     background_file_hash: data.background_file_hash || (data.background && data.background.hash),
     background_v3_file_hash: data.background_v3_file_hash || (data.backgroundV3 && data.backgroundV3.hash),
-    
+
     backgroundUrl: buildAssetUrl(data.background_file_hash || (data.background && data.background.hash)),
     backgroundV3Url: buildAssetUrl(data.background_v3_file_hash || (data.backgroundV3 && data.backgroundV3.hash)),
   };
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }) {
       title: `[${level.rating}] ${level.title}`,
       description: ogDescription,
       site_name: `UntitledCharts - ${level.author}`,
-      images: level.thumbnail ? [{ url: level.thumbnail, width: 50, height: 50 }] : [],
+      images: level.thumbnail ? [{ url: level.thumbnail }] : [],
     },
     twitter: {
       card: 'summary_large_image',

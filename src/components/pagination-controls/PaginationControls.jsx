@@ -6,7 +6,8 @@ export default function PaginationControls({
   pageCount,
   currentPage,
   posts = [],
-  onPageChange
+  onPageChange,
+  totalCount
 }) {
   const { t } = useLanguage();
   const [inputPage, setInputPage] = useState(currentPage + 1);
@@ -27,6 +28,7 @@ export default function PaginationControls({
     let pageNum = parseInt(inputPage, 10);
     if (!isNaN(pageNum)) {
       if (pageNum < 1) pageNum = 1;
+      if (pageNum > pageCount) pageNum = pageCount;
       onPageChange(pageNum - 1);
     } else {
       setInputPage(currentPage + 1);
@@ -47,10 +49,12 @@ export default function PaginationControls({
     return null;
   }
 
+  const resultsCount = totalCount !== undefined ? totalCount : posts.length;
+
   return (
     <div className="pagination-card">
       <div className="pagination-info">
-        <p>{t('search.showingCharts', { count: posts.length })}</p>
+        <p>{t('search.showingCharts', { count: resultsCount })}</p>
       </div>
       <div className="pagination-controls">
         <button
@@ -72,13 +76,13 @@ export default function PaginationControls({
             onBlur={handleBlur}
             aria-label="Page number"
           />
-          <span className="pagination-text">{t('search.of')}...</span>
+          <span className="pagination-text">{t('search.of')} {pageCount}</span>
         </div>
 
         <button
           className="pagination-btn"
           onClick={() => onPageChange(currentPage + 1)}
-          disabled={posts.length === 0}
+          disabled={currentPage >= pageCount - 1}
         >
           {t('search.next')}
         </button>

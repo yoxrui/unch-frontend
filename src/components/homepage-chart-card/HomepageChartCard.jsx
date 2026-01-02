@@ -1,9 +1,10 @@
 "use client";
-import { Heart, Music, User, Play, Pause, MessageSquare } from "lucide-react";
+import { Heart, Music, User, Play, Pause, MessageSquare, Calendar } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./HomepageChartCard.css";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { formatRelativeTime } from "../../utils/dateUtils";
 
 export default function HomepageChartCard({
     chart,
@@ -27,11 +28,13 @@ export default function HomepageChartCard({
         bgmUrl,
         backgroundUrl,
         backgroundV3Url,
-        commentsCount: initialCommentsCount
+        commentsCount: initialCommentsCount,
+        createdAt
     } = chart;
 
     const [isMobile, setIsMobile] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     const localAudioRef = useRef(null);
 
     useEffect(() => {
@@ -63,49 +66,42 @@ export default function HomepageChartCard({
     const [commentsCount, setCommentsCount] = useState(initialCommentsCount || 0);
 
     useEffect(() => {
-        const fetchComments = async () => {
+        const fetchCommentsCount = async () => {
+            if (!id) return;
             try {
-                const apiBase = process.env.NEXT_PUBLIC_API_URL;
                 const cleanId = id.toString().replace('UnCh-', '');
-                const res = await fetch(`${apiBase}/api/charts/${cleanId}/comment`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/charts/${cleanId}/`);
                 if (res.ok) {
                     const data = await res.json();
-                    const list = Array.isArray(data) ? data : (data.data || []);
-                    setCommentsCount(list.length);
+                    if (data && data.comment_count !== undefined) {
+                        setCommentsCount(data.comment_count);
+                    }
                 }
             } catch (e) {
+                console.error("Failed to fetch comment count in card", e);
             }
         };
-
-        if (id) {
-            fetchComments();
-        }
+        fetchCommentsCount();
     }, [id]);
 
     const handleMouseEnter = () => {
         if (isMobile) return;
         setIsHovered(true);
-        if (onPlay && !isPlaying) {
-            onPlay(id, bgmUrl);
-        }
     };
 
     const handleMouseLeave = () => {
         if (isMobile) return;
         setIsHovered(false);
-        if (onStop && isPlaying) {
-            onStop(id);
-        }
     };
 
     const handleCardClick = (e) => {
         if (e.target.closest('button')) return;
 
         if (isMobile) {
-            if (isPlaying) {
-                router.push(`/levels/UnCh-${encodeURIComponent(id)}`);
+            if (!isFocused) {
+                setIsFocused(true);
             } else {
-                if (onPlay) onPlay(id, bgmUrl);
+                router.push(`/levels/UnCh-${encodeURIComponent(id)}`);
             }
         } else {
             router.push(`/levels/UnCh-${encodeURIComponent(id)}`);
@@ -123,13 +119,13 @@ export default function HomepageChartCard({
             onClick={handleCardClick}
         >
             <div
-                className={`card-bg-blur ${isHovered ? 'hovered' : ''}`}
+                className={`card-bg-blur ${isHovered || isFocused ? 'hovered' : ''}`}
                 style={{
                     backgroundImage: `url(${bgImage})`
                 }}
             />
 
-            <div className={`card-image-container ${isHovered || (isMobile && isPlaying) ? 'disc-mode' : ''}`}>
+            <div className="card-image-container">
                 <div className="card-image-wrapper">
                     {coverUrl ? (
                         <div className="disc-wrapper">
@@ -138,25 +134,24 @@ export default function HomepageChartCard({
                         </div>
                     ) : (
                         <div className="card-cover placeholder">
-                            <span>No Image</span>
+                            <span>{t('hero.noImage', 'No Image')}</span>
                         </div>
                     )}
                 </div>
 
-                {!isHovered && (
-                    <div className="card-overlay">
-                        <button
-                            className={`play-btn ${isPlaying ? "playing" : ""}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (isPlaying && onStop) onStop(id);
-                                else if (onPlay) onPlay(id, bgmUrl);
-                            }}
-                        >
-                            {isPlaying ? <Pause size={24} className="text-blue-500" /> : <Play size={24} className="text-blue-500" />}
-                        </button>
-                    </div>
-                )}
+                <div className={`card-overlay ${isHovered || isFocused ? 'visible' : ''}`}>
+                    <button
+                        className={`play-btn ${isPlaying ? "playing" : ""}`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (isPlaying && onStop) onStop(id);
+                            else if (onPlay) onPlay(id, bgmUrl);
+                        }}
+                        style={{ position: 'relative', zIndex: 50 }}
+                    >
+                        {isPlaying ? <Pause size={24} className="text-blue-500" /> : <Play size={24} className="text-blue-500" />}
+                    </button>
+                </div>
 
                 <div className="level-badge">Lv.{rating}</div>
             </div>
@@ -166,25 +161,31 @@ export default function HomepageChartCard({
                     <h3 className="card-title" title={title}>{title}</h3>
                 </div>
 
-                <div className="card-meta">
-                    <div className="meta-item">
+
+
+                <div className="card-footer-vertical">
+                    <div className="footer-row artists">
                         <Music size={14} />
                         <span className="info-artists" title={artists}>{t('hero.by')}: {artists}</span>
                     </div>
-                </div>
-
-                <div className="card-footer">
-                    <div className="author-info">
+                    <div className="footer-row date">
+                        <Calendar size={14} />
+                        <span className="relative-date">{formatRelativeTime(createdAt)}</span>
+                    </div>
+                    <div className="footer-row author">
                         <User size={14} />
-                        <span className="truncate">{author}</span>
+                        <span className="author-name truncate">{t('hero.chartedBy')}: {author}</span>
                     </div>
-                    <div className="likes-info">
-                        <Heart size={14} className={likeCount > 0 ? "text-red-400 fill-current" : ""} />
-                        <span>{likeCount}</span>
-                    </div>
-                    <div className="likes-info" style={{ marginLeft: '8px' }}>
-                        <MessageSquare size={14} className="text-blue-400" />
-                        <span>{commentsCount}</span>
+
+                    <div className="footer-stats-row">
+                        <div className="likes-info">
+                            <Heart size={14} className={likeCount > 0 ? "text-red-400 fill-current" : ""} />
+                            <span>{likeCount}</span>
+                        </div>
+                        <div className="likes-info">
+                            <MessageSquare size={14} className="text-blue-400" />
+                            <span>{commentsCount}</span>
+                        </div>
                     </div>
                 </div>
             </div>

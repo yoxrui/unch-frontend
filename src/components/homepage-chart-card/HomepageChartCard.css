@@ -2,7 +2,7 @@
     position: relative;
     width: 280px;
 
-    height: 380px;
+    height: 440px;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(56, 189, 248, 0.1);
     border-radius: 20px;
@@ -101,18 +101,6 @@
 }
 
 
-.card-image-container.disc-mode .disc-wrapper {
-    border-radius: 50%;
-    transform: scale(0.95) rotate(0deg);
-    animation: disc-spin 3s linear infinite;
-    box-shadow: 0 0 0 4px #111, 0 0 0 6px rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.card-image-container.disc-mode .disc-center-hole {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
 @keyframes disc-spin {
     from {
         transform: scale(0.95) rotate(0deg);
@@ -123,9 +111,23 @@
     }
 }
 
-.card-image-container.disc-mode .card-cover {
-    transform: scale(1.1);
+.homepage-chart-card:hover .disc-wrapper,
+.homepage-chart-card.playing .disc-wrapper {
+    border-radius: 50%;
+    transform: scale(0.95);
+    animation: disc-spin 3s linear infinite;
+    box-shadow: 0 0 0 4px #111, 0 0 0 6px rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
 
+.homepage-chart-card:hover .disc-center-hole,
+.homepage-chart-card.playing .disc-center-hole {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.homepage-chart-card:hover .card-cover,
+.homepage-chart-card.playing .card-cover {
+    transform: scale(1.1);
 }
 
 .card-cover.placeholder {
@@ -140,23 +142,21 @@
 .card-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-
     transition: opacity 0.2s ease;
     backdrop-filter: blur(2px);
     border-radius: 12px;
-
     margin: 12px;
-
+    z-index: 20;
 }
 
-.homepage-chart-card:not(:hover) .card-overlay {
-    opacity: 0;
-
+.homepage-chart-card:hover .card-overlay,
+.homepage-chart-card.playing .card-overlay {
+    opacity: 1;
 }
 
 
@@ -207,7 +207,7 @@
 @media (max-width: 768px) {
     .homepage-chart-card {
         width: 180px;
-        height: 280px;
+        height: 340px;
         border-radius: 16px;
     }
 
@@ -347,23 +347,32 @@ body.light-mode .disc-center-hole {
     border-color: rgba(15, 23, 42, 0.1);
 }
 
-.card-footer {
+.card-footer-vertical {
     margin-top: auto;
     padding-top: 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 4px;
     font-size: 0.8rem;
     color: #64748b;
 }
 
-.author-info {
+.footer-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex: 1;
+    gap: 8px;
+    width: 100%;
     overflow: hidden;
+}
+
+.footer-stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
 }
 
 .likes-info {
