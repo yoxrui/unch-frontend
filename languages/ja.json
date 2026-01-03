@@ -65,34 +65,19 @@
         "descriptionIncludes": "説明に含む",
         "descriptionPlaceholder": "説明で検索...",
         "newest": "最新",
-        "songBy": "曲作成者",
-        "reroll": "再ロール"
-    },
-    "time": {
-        "second_singular": "{1}秒前",
-        "second_plural": "{1}秒前",
-        "minute_singular": "{1}分前",
-        "minute_plural": "{1}分前",
-        "hour_singular": "{1}時間前",
-        "hour_plural": "{1}時間前",
-        "day_singular": "{1}日前",
-        "day_plural": "{1}日前",
-        "month_singular": "{1}ヶ月前",
-        "month_plural": "{1}ヶ月前",
-        "year_singular": "{1}年前",
-        "year_plural": "{1}年前",
-        "justNow": "たった今"
+        "songBy": "曲作成者"
     },
     "levelDetail": {
         "back": "戻る",
         "by": "作成者",
         "chartedBy": "作成者",
-        "level": "Lv. {1}",
+        "level": "Lv.",
         "openViaSonolus": "Sonolusで開く",
         "share": "シェア",
         "statistics": "統計",
         "likes": "いいね",
         "comments": "コメント",
+        "leaderboardsNotAvailable": "コメントは近日公開予定！",
         "linkCopied": "リンクがコピーされました！",
         "failedToCopy": "コピーに失敗しました",
         "embedCopied": "埋め込みコードがコピーされました！",
@@ -137,7 +122,7 @@
         "unknown": "不明"
     },
     "card": {
-        "level": "Lv. {1}"
+        "level": "Lv."
     },
     "dashboard": {
         "title": "ダッシュボード",
