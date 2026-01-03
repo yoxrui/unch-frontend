@@ -1,139 +1,149 @@
-.login-container {
-    width: 100%;
+/* Login Page Layout */
+.login-page {
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
 }
 
-.login-box {
-    background: var(--glass-bg);
-
-    backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    width: 100%;
-    max-width: 440px;
-    padding: 48px;
-    border-radius: 32px;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+.login-container {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    text-align: center;
-    transition: all 0.3s ease;
-    position: relative;
+    justify-content: center;
+    padding: 20px;
     z-index: 10;
 }
 
-h1 {
-    font-size: 32px;
-    font-weight: 800;
-    text-align: center;
-    margin: 0 0 30px 0;
-    color: var(--foreground);
+/* Professional Login Box */
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: relative;
+    /* For Miku positioning context */
+}
 
-    text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+/* Miku Positioning */
+.mascot-wrapper {
+    position: absolute;
+    top: -100px;
+    /* Sit on top */
+    right: 20px;
+    pointer-events: none;
+    z-index: -1;
+    /* Behind box if needed, or above depending on transparency */
+    /* If we want her SITTING ON the box, we can adjust top */
+}
+
+.login-mascot {
+    width: 140px;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.login-header {
+    text-align: center;
+}
+
+.login-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 8px 0;
     letter-spacing: -0.02em;
 }
 
-.login-box form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    margin-top: 10px;
+.login-subtitle {
+    color: #888;
+    font-size: 0.95rem;
+    margin: 0;
 }
 
-.login-box input {
-    width: 100%;
-    padding: 12px 20px;
-    background: rgba(0, 0, 0, 0.2);
-
-    border: 1px solid var(--glass-border);
-    border-radius: 30px;
-    color: var(--foreground);
-    font-size: 16px;
-    margin-bottom: 20px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-
-body.light-mode .login-box input {
-    background: rgba(255, 255, 255, 0.5);
-    border-color: rgba(0, 0, 0, 0.1);
-    color: #0f172a;
-}
-
-.login-box input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
-    background: rgba(0, 0, 0, 0.1);
-}
-
-.login-btn {
-    width: 100%;
-    padding: 14px 24px;
-    border: none;
-    border-radius: 30px;
-    background: var(--primary);
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
-    margin-top: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
-    filter: brightness(1.1);
-}
-
-.login-box p {
-    font-size: 15px;
-    font-weight: 400;
-    color: var(--foreground-muted);
-    line-height: 1.5;
-    margin: 20px 0;
-}
-
-.sucks {
+.login-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
     color: #ef4444;
-    font-weight: 600;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
-body.light-mode .login-box {
-    background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(15, 23, 42, 0.1);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+.waiting-state {
+    text-align: center;
 }
 
-body.light-mode h1 {
-    color: #0f172a;
-    text-shadow: none;
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px auto;
 }
 
-body.light-mode .login-actions {
-    background: rgba(15, 23, 42, 0.05);
-    border-color: rgba(15, 23, 42, 0.05);
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.login-actions {
+/* Primary Button - "Old" Black Style */
+.login-btn-primary {
     width: 100%;
+    background: #000;
+    /* Black background */
+    color: #fff;
+    /* White text */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* Subtle white border */
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 24px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 12px;
+    transition: all 0.2s;
+}
+
+.login-btn-primary:hover {
+    background: #111;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.sonolus-icon-wrapper img {
+    height: 20px;
+    width: auto;
+    filter: brightness(200%);
+    /* Make sure icon pops if dark */
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .login-box {
+        padding: 24px;
+    }
+
+    .mascot-wrapper {
+        top: -80px;
+        right: 10px;
+    }
+
+    .login-mascot {
+        width: 100px;
+    }
 }

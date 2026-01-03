@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { Heart, MessageSquare, Share2, Copy, ExternalLink, ArrowLeft, User, Music, Play, Pause, Volume2, Star, Download, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, MessageSquare, Share2, Copy, ExternalLink, ArrowLeft, User, Music, Play, Pause, Volume2, Star, Download, Eye, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import WaveformPlayer from '../../../components/waveform-player/WaveformPlayer';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import "./LevelCard.css";
@@ -347,11 +347,15 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
                 <span className="credit-label">{t('levelDetail.chartedBy')}</span>
                 <a href="#" className="charter-link">{level.author}</a>
               </div>
+              <div className="level-credit-item">
+                <span className="credit-label"><Calendar size={14} style={{ marginRight: '4px', verticalAlign: 'text-bottom' }} /></span>
+                <span>{level.createdAt ? new Date(level.createdAt).toLocaleDateString() : 'Unknown Date'}</span>
+              </div>
             </div>
 
             <div className="level-stats-row">
               <div className="level-rating-badge">
-                Lv. {level.rating}
+                {t('levelDetail.level', { 1: level.rating })}
               </div>
               {level.tags && level.tags.map((tag, i) => (
                 <span key={i} className="level-tag-item">
@@ -361,7 +365,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
             </div>
 
             {level.description && (
-              <div className="level-description">
+              <div className="level-description" style={{ width: '100%', textAlign: 'left', boxSizing: 'border-box' }}>
                 {level.description}
               </div>
             )}
@@ -464,7 +468,7 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
                 className="action-btn btn-sonolus"
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
               >
-                {t('levelDetail.openViaSonolus')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', marginLeft: '6px' }} />
+                {t('levelDetail.openViaSonolus')} <img src="https://sonolus.com/logo.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', marginLeft: '6px' }} />
               </button>
               <button
                 onClick={handleShare}

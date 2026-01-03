@@ -11,9 +11,10 @@ export function ThemeProvider({ children }) {
         if (savedTheme) {
             setTheme(savedTheme);
             document.body.classList.toggle("light-mode", savedTheme === "light");
+            document.documentElement.setAttribute("data-theme", savedTheme);
         } else {
-            // Default to dark and ensure body reflects it
             document.body.classList.remove("light-mode");
+            document.documentElement.setAttribute("data-theme", "dark");
         }
     }, []);
 
@@ -22,6 +23,7 @@ export function ThemeProvider({ children }) {
         setTheme(newTheme);
         localStorage.setItem("theme", newTheme);
         document.body.classList.toggle("light-mode", newTheme === "light");
+        document.documentElement.setAttribute("data-theme", newTheme);
     };
 
     return (

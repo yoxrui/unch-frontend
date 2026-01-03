@@ -12,6 +12,8 @@
   --glass-border: rgba(56, 189, 248, 0.1);
 }
 
+
+
 body.light-mode {
   --background: #cbd5e1;
   --foreground: #1e293b;
@@ -66,17 +68,129 @@ body.light-mode {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUpOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+.animate-slide-up-out {
+  animation: slideUpOut 0.3s ease forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
 
 
 body {
+  font-family: var(--font-geist-sans), 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--foreground);
   background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%) fixed;
   background-attachment: fixed;
   transition: background 0.5s ease;
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
+}
+
+/* Prevent horizontal overflow globally */
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+#__next,
+main,
+.main-content {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+video {
+  content-visibility: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

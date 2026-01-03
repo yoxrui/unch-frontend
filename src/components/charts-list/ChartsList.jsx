@@ -136,7 +136,7 @@ export default function ChartsList({
                   <div className="metadata-stats-group">
                     <span className="metadata-item stats-combined">
                       {post.rating !== undefined && (
-                        <span className="lv-part">Lv.{post.rating}</span>
+                        <span className="lv-part">{t('card.level', { 1: post.rating })}</span>
                       )}
                       {post.likeCount !== undefined && (
                         <span className="likes-part">
@@ -150,7 +150,7 @@ export default function ChartsList({
                   </div>
                   {post.createdAt && (
                     <span className="metadata-item created">
-                      <Calendar size={12} /> {formatRelativeTime(post.createdAt)}
+                      <Calendar size={12} /> {formatRelativeTime(post.createdAt, t)}
                     </span>
                   )}
                   {post.updatedAt && (

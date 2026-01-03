@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense, useCallback } from "react";
 import Link from "next/link";
 import { Loader2, TrendingUp, Sparkles, Zap, Shuffle, PlayCircle, Settings, Clock, Star, Heart, Type, ArrowUp, ArrowDown, User } from "lucide-react";
 import ChartsList from "../components/charts-list/ChartsList";
@@ -59,13 +59,14 @@ function HomeContent() {
   const audioRefs = useRef({});
   const globalAudioRef = useRef(null);
   const [globalBgmUrl, setGlobalBgmUrl] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
   const [drawerCharts, setDrawerCharts] = useState([]);
   const [drawerFetchType, setDrawerFetchType] = useState(null);
 
-  const mapChartData = (item, baseUrl = "") => {
+  const mapChartData = useCallback((item, baseUrl = "") => {
     const authorHash = item.author;
     const authorName = item.author_full || item.author || "Unknown";
 
@@ -106,9 +107,9 @@ function HomeContent() {
       createdAt: item.createdAt || item.created_at,
     };
     return mapped;
-  };
+  }, []);
 
-  const fetchHomeData = async () => {
+  const fetchHomeData = useCallback(async () => {
     setLoading(true);
     try {
       const apiBase = APILink;
@@ -135,9 +136,9 @@ function HomeContent() {
       console.error("Home fetch error:", err);
       setLoading(false);
     }
-  };
+  }, [APILink, mapChartData, setHomeData, setLoading]);
 
-  const fetchSearchData = async () => {
+  const fetchSearchData = useCallback(async () => {
     setLoading(true);
     try {
       const apiBase = APILink;
@@ -179,8 +180,8 @@ function HomeContent() {
       const uniquePosts = Array.from(new Map(rawData.map(item => [item.id, item])).values());
 
       setPosts(uniquePosts);
-      const infiniteScrollTypes = ['random', 'newest'];
-      setPageCount(infiniteScrollTypes.includes(searchType) ? (page + 2) : (json.pages || json.pageCount || 1));
+      const infiniteScrollTypes = ['newest'];
+      setPageCount(json.pages || json.pageCount || (infiniteScrollTypes.includes(searchType) ? (page + 2) : 1));
       setTotalResults(json.total || (json.items?.length || json.data?.length || 0));
       setLoading(false);
     } catch (err) {
@@ -188,7 +189,7 @@ function HomeContent() {
       setError("Failed to load charts.");
       setLoading(false);
     }
-  };
+  }, [APILink, searchType, page, staffPick, searchQuery, sortBy, sortOrder, minRating, maxRating, tags, minLikes, maxLikes, likedBy, titleIncludes, descriptionIncludes, artistsIncludes, mapChartData, setPosts, setPageCount, setTotalResults, setLoading, setError]);
 
   const FullLoading = () => (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
@@ -202,7 +203,7 @@ function HomeContent() {
     } else {
       fetchSearchData();
     }
-  }, [viewMode, page, searchType, sortBy, sortOrder, staffPick]);
+  }, [viewMode, fetchHomeData, fetchSearchData, refreshKey]);
 
   const handleSearch = (e) => {
     e?.preventDefault();
@@ -306,7 +307,7 @@ function HomeContent() {
               audioRefs={audioRefs}
               onStop={handleStop}
               CardComponent={HomepageChartCard}
-              onViewAll={() => handleViewAll("New Charts", homeData.newCharts, "new")}
+              onViewAll={() => handleViewAll(t('home.newCharts'), homeData.newCharts, "new")}
             />
           </div>
 
@@ -320,7 +321,7 @@ function HomeContent() {
               audioRefs={audioRefs}
               onStop={handleStop}
               CardComponent={HomepageChartCard}
-              onViewAll={() => handleViewAll("Trending Charts", homeData.trending, "trending")}
+              onViewAll={() => handleViewAll(t('home.trendingCharts'), homeData.trending, "trending")}
             />
           </div>
 
@@ -529,6 +530,8 @@ function HomeContent() {
             onPageChange={setPage}
             posts={posts}
             totalCount={totalResults}
+            isRandom={searchType === 'random'}
+            onReroll={() => setRefreshKey(prev => prev + 1)}
           />
         </div>
       )}

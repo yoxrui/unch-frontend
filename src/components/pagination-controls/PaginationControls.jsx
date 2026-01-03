@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Shuffle } from 'lucide-react';
 import './PaginationControls.css';
 
 export default function PaginationControls({
@@ -7,7 +8,9 @@ export default function PaginationControls({
   currentPage,
   posts = [],
   onPageChange,
-  totalCount
+  totalCount,
+  isRandom = false,
+  onReroll
 }) {
   const { t } = useLanguage();
   const [inputPage, setInputPage] = useState(currentPage + 1);
@@ -45,7 +48,7 @@ export default function PaginationControls({
     handleInputSubmit(e);
   };
 
-  if (pageCount <= 1) {
+  if (!isRandom && pageCount <= 1) {
     return null;
   }
 
@@ -54,38 +57,51 @@ export default function PaginationControls({
   return (
     <div className="pagination-card">
       <div className="pagination-info">
-        <p>{t('search.showingCharts', { count: resultsCount })}</p>
+        {!isRandom && <p>{(t('search.showingCharts', { count: resultsCount }) || '').replace('{0}', resultsCount).replace('{{count}}', resultsCount)}</p>}
       </div>
       <div className="pagination-controls">
-        <button
-          className="pagination-btn"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage <= 0}
-        >
-          {t('search.previous')}
-        </button>
+        {isRandom ? (
+          <button
+            className="pagination-btn reroll-btn"
+            onClick={onReroll}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0.75rem 1.5rem' }}
+          >
+            <Shuffle size={18} />
+            {t('search.reroll', 'Reroll')}
+          </button>
+        ) : (
+          <>
+            <button
+              className="pagination-btn"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 0}
+            >
+              {t('search.previous')}
+            </button>
 
-        <div className="pagination-input-container">
-          <span className="pagination-text">{t('search.page')}</span>
-          <input
-            type="text"
-            className="pagination-input"
-            value={inputPage}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            onBlur={handleBlur}
-            aria-label="Page number"
-          />
-          <span className="pagination-text">{t('search.of')} {pageCount}</span>
-        </div>
+            <div className="pagination-input-container">
+              <span className="pagination-text">{t('search.page')}</span>
+              <input
+                type="text"
+                className="pagination-input"
+                value={inputPage}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onBlur={handleBlur}
+                aria-label="Page number"
+              />
+              <span className="pagination-text">{t('search.of')} {pageCount}</span>
+            </div>
 
-        <button
-          className="pagination-btn"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage >= pageCount - 1}
-        >
-          {t('search.next')}
-        </button>
+            <button
+              className="pagination-btn"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= pageCount - 1}
+            >
+              {t('search.next')}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

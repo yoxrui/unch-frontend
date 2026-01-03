@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ChartCard from "../chart-card/ChartCard";
 import SectionHeader from "../section-header/SectionHeader";
+import { useLanguage } from "@/contexts/LanguageContext";
 import "./TrendingCarousel.css";
 
 export default function TrendingCarousel({
@@ -18,6 +19,7 @@ export default function TrendingCarousel({
     onStop,
     onViewAll
 }) {
+    const { t } = useLanguage();
     const scrollRef = useRef(null);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
@@ -80,7 +82,7 @@ export default function TrendingCarousel({
                 />
                 {onViewAll && (
                     <button onClick={onViewAll} className="view-all-text-btn" style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>
-                        View All
+                        {t('home.viewAll')}
                     </button>
                 )}
             </div>

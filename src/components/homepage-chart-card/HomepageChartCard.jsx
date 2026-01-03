@@ -63,26 +63,8 @@ export default function HomepageChartCard({
         }
     }, [isPlaying]);
 
-    const [commentsCount, setCommentsCount] = useState(initialCommentsCount || 0);
-
-    useEffect(() => {
-        const fetchCommentsCount = async () => {
-            if (!id) return;
-            try {
-                const cleanId = id.toString().replace('UnCh-', '');
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/charts/${cleanId}/`);
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.comment_count !== undefined) {
-                        setCommentsCount(data.comment_count);
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to fetch comment count in card", e);
-            }
-        };
-        fetchCommentsCount();
-    }, [id]);
+    // usage of initialCommentsCount is enough, no need to fetch individually to avoid N+1 problem
+    const commentsCount = initialCommentsCount || 0;
 
     const handleMouseEnter = () => {
         if (isMobile) return;
@@ -153,7 +135,7 @@ export default function HomepageChartCard({
                     </button>
                 </div>
 
-                <div className="level-badge">Lv.{rating}</div>
+                <div className="level-badge">{t('card.level', { 1: rating })}</div>
             </div>
 
             <div className="card-content">
@@ -170,7 +152,7 @@ export default function HomepageChartCard({
                     </div>
                     <div className="footer-row date">
                         <Calendar size={14} />
-                        <span className="relative-date">{formatRelativeTime(createdAt)}</span>
+                        <span className="relative-date">{formatRelativeTime(createdAt, t)}</span>
                     </div>
                     <div className="footer-row author">
                         <User size={14} />

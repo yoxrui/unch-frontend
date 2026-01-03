@@ -22,11 +22,14 @@ export function UserProvider({ children }) {
 
     let expiryTime = parseInt(expiry, 10);
 
+    // Heuristic to detect if expiry is in seconds (Unix timestamp) or milliseconds
+    // 100000000000 is ~ year 1973 in ms, or year 5138 in seconds.
+    // So if it's less than this, it's almost certainly seconds.
     if (expiryTime < 100000000000) {
       expiryTime *= 1000;
     }
 
-    if (isNaN(expiryTime)) {
+    if (isNaN(expiryTime) || expiryTime < Date.now()) {
       localStorage.removeItem("session");
       localStorage.removeItem("expiry");
       setIsLoggedIn(false);

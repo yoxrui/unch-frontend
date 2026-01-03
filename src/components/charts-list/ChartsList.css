@@ -36,6 +36,9 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     background: transparent;
+    will-change: transform;
+    content-visibility: auto;
+    contain: content;
 }
 
 .dashboard-bg-layer {
@@ -427,8 +430,8 @@ body.light-mode .stats-combined {
     .song-info {
         flex-direction: column !important;
         width: 100%;
-        padding: 10px 12px !important;
-        gap: 6px !important;
+        padding: 12px 14px !important;
+        gap: 8px !important;
         align-items: flex-start !important;
         overflow: hidden;
     }
@@ -436,7 +439,8 @@ body.light-mode .stats-combined {
     .chart-content {
         align-items: flex-start !important;
         width: 100%;
-        gap: 6px !important;
+        gap: 8px !important;
+        padding-top: 4px;
     }
 
     .chart-data {
@@ -505,22 +509,26 @@ body.light-mode .stats-combined {
 
     .chart-metadata {
         flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto;
-        gap: 4px !important;
+        flex-wrap: wrap !important;
+        overflow: visible;
+        gap: 6px !important;
         padding-bottom: 2px;
-        scrollbar-width: none;
-    }
-
-    .chart-metadata::-webkit-scrollbar {
-        display: none;
+        height: auto;
     }
 
     .metadata-item {
-        font-size: 9px !important;
-        padding: 2px 6px !important;
+        font-size: 10px !important;
+        padding: 3px 8px !important;
         white-space: nowrap;
         flex-shrink: 0;
+        border-radius: 6px;
+    }
+
+    .metadata-item.stats-combined {
+        padding: 0 !important;
+        border-radius: 20px !important;
+        overflow: hidden !important;
+        border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .chart-actions {

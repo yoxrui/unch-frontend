@@ -68,6 +68,15 @@ export function LanguageProvider({ children }) {
     }, [language]);
 
     const t = (key, params = {}) => {
+        let defaultValue = key; // Default return is key
+        let actualParams = params;
+
+        // Support optional default value as 2nd argument
+        if (typeof params === 'string') {
+            defaultValue = params;
+            actualParams = {};
+        }
+
         const keys = key.split(".");
         let value = translations;
         for (const k of keys) {
@@ -85,11 +94,11 @@ export function LanguageProvider({ children }) {
             }
         }
 
-        if (value === undefined) return key;
+        if (value === undefined) return defaultValue;
 
         if (typeof value === 'string') {
-            return value.replace(/\{\{(\w+)\}\}/g, (_, k) => {
-                return params[k] !== undefined ? params[k] : `{{${k}}}`;
+            return value.replace(/\{(\w+)\}/g, (_, k) => {
+                return actualParams[k] !== undefined ? actualParams[k] : `{${k}}`;
             });
         }
 

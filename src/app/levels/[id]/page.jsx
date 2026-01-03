@@ -28,6 +28,7 @@ async function fetchLevel(rawId) {
     rating: data.rating || 0,
     likes: data.likes || data.like_count || 0,
     comments: data.comments || data.comments_count || 0,
+    createdAt: data.created_at || data.createdAt,
     asset_base_url: base,
 
     music_hash: data.music_file_hash || (data.music && data.music.hash),

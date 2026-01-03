@@ -103,74 +103,59 @@ export default function Login() {
   }, [isWaiting, externalLoginId, apiUrl, router]);
 
   return (
-    <main>
+    <main className="login-page">
       <LoginBackground />
-      <div className="login-screen" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', zIndex: 10 }}>
-        <div className="login-box glass-card animate-scale-in" style={{
-          width: '100%',
-          maxWidth: '440px',
-          margin: '0 20px',
-        }}>
-          <h1 style={{
-            textAlign: 'center',
-            marginBottom: '32px',
-            background: 'linear-gradient(135deg, #38bdf8 0%, #f472b6 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            fontWeight: '800',
-            fontSize: '2.5rem',
-            letterSpacing: '-1px'
-          }}>
-            UntitledCharts
-          </h1>
+
+      <div className="login-container">
+        <div className="login-box glass-card animate-scale-in">
+          {/* Miku Sitting on top of the login box */}
+          <div className="mascot-wrapper">
+            <img src="/miku-sitting.png" alt="Miku" className="login-mascot" />
+          </div>
+
+          <div className="login-header">
+            <div className="logo-placeholder"></div>
+            <h1>UntitledCharts</h1>
+          </div>
 
           {loginError && (
-            <div style={{
-              color: '#ef4444',
-              marginBottom: '24px',
-              fontSize: '14px',
-              textAlign: 'center',
-              padding: '12px',
-              background: 'rgba(239, 68, 68, 0.1)',
-              borderRadius: '12px',
-              border: '1px solid rgba(239, 68, 68, 0.2)'
-            }}>
+            <div className="login-error">
               {loginError}
             </div>
           )}
 
           {isWaiting ? (
-            <div style={{ textAlign: 'center' }}>
-              <div className="loading-spinner" style={{ marginBottom: '20px' }}>
-                <div style={{ width: '40px', height: '40px', border: '3px solid rgba(56, 189, 248, 0.2)', borderTopColor: '#38bdf8', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
-              </div>
-              <p style={{ color: '#94a3b8', marginBottom: '24px', fontWeight: '500' }}>{t('login.waitingForAuth')}</p>
+            <div className="waiting-state">
+              <div className="loading-spinner"></div>
+              <p>{t('login.waitingForAuth')}</p>
               {externalLoginId && (
-                <div className="login-actions">
-                  <button
-                    onClick={() => {
-                      const host = getHostFromUrl(sonolusServerUrl);
-                      window.open(`https://open.sonolus.com/external-login/${host}/sonolus/authenticate_external?id=${externalLoginId}`, "_blank", "noopener,noreferrer");
-                    }}
-                    className="login-btn"
-                    style={{ width: '100%', padding: '14px', borderRadius: '16px', fontWeight: '600' }}
-                  >
-                    {t('login.openSonolusApp')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', margin: '0 5px' }} />
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    const host = getHostFromUrl(sonolusServerUrl);
+                    window.open(`https://open.sonolus.com/external-login/${host}/sonolus/authenticate_external?id=${externalLoginId}`, "_blank", "noopener,noreferrer");
+                  }}
+                  className="login-btn-primary"
+                >
+                  {t('login.openSonolusApp')}
+                  <span className="sonolus-icon-wrapper">
+                    <img src="https://sonolus.com/logo.png" alt="Sonolus" />
+                  </span>
+                </button>
               )}
             </div>
           ) : (
             <form onSubmit={onSubmit}>
-              <div className="login-actions" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <button type="submit" className="login-btn" style={{ width: '100%', padding: '16px', borderRadius: '16px', fontWeight: '700', fontSize: '1rem', transition: 'all 0.3s ease' }}>
-                  {t('login.loginVia')} <img src="/sonolus-text.png" alt="Sonolus" style={{ height: '1.2em', verticalAlign: 'middle', margin: '0 5px' }} />
-                </button>
-              </div>
+              <button type="submit" className="login-btn-primary">
+                {t('login.loginVia')}
+                <span className="sonolus-icon-wrapper">
+                  <img src="https://sonolus.com/logo.png" alt="Sonolus" />
+                </span>
+              </button>
             </form>
           )}
         </div>
       </div>
+      {/* Footer removed to avoid duplication with Layout */}
     </main>
   );
 }

@@ -1,7 +1,10 @@
 .level-detail-wrapper {
     padding: 20px;
+    padding-top: 120px;
     position: relative;
     box-sizing: border-box;
+    overflow: visible !important;
+    height: auto !important;
 }
 
 .level-bg-blur {
@@ -15,6 +18,7 @@
     filter: blur(50px) brightness(0.4);
     transform: scale(1.2);
     z-index: 0;
+    pointer-events: none;
 }
 
 .level-detail-container {
@@ -939,7 +943,7 @@ body.light-mode .stat-header:hover {
     border: 1px solid transparent;
 }
 
-.stat-with-graph-container:hover .stat-graph-drawer {
+.stat-with-graph-container.open .stat-graph-drawer {
     max-height: 120px;
     opacity: 1;
     margin-bottom: 12px;
