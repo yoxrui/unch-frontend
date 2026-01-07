@@ -55,7 +55,7 @@
         "tagsPlaceholder": "Comma-separated",
         "staffPickOnly": "Staff Pick Only",
         "search": "Search",
-        "showingCharts": "Showing {{count}} charts",
+        "showingCharts": "Showing {count} charts",
         "page": "Page",
         "of": "of",
         "previous": "Previous",
@@ -173,6 +173,7 @@
         "save": "Save",
         "loading": "Loading charts...",
         "noCharts": "No Charts Yet",
+        "noResults": "No Results",
         "createFirst": "Create your first chart to get started!",
         "totalLikes": "Total Likes",
         "totalComments": "Total Comments"
