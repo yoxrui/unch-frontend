@@ -307,13 +307,18 @@ export default function LevelCard({ level, SONOLUS_SERVER_URL }) {
       />
 
       <div className="back-btn-container">
-        <button onClick={() => {
-          if (window.history.length > 1) {
-            router.back();
-          } else {
-            router.push('/');
-          }
-        }} className="back-btn">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            if (window.history.length > 2) {
+              router.back();
+            } else {
+              router.push('/');
+            }
+          }}
+          className="back-btn"
+          style={{ position: 'relative', zIndex: 51 }}
+        >
           <ArrowLeft size={20} />
           {t('levelDetail.back')}
         </button>
